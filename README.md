@@ -75,3 +75,5 @@ The first architecture slice now lives in [`docs/architecture.md`](docs/architec
 The PostgreSQL design is in [`docs/database-schema.sql`](docs/database-schema.sql). It covers tenant isolation, hubs, collectors, lots, append-only events, evidence hashes, verification checks, custody transfers, impact calculations, value quotes, payouts, blockchain anchors, and audit history.
 
 The Solidity registry skeleton is in [`docs/contracts/PlastiTraceRegistry.sol`](docs/contracts/PlastiTraceRegistry.sol). It registers material identities, anchors evidence, records verifier attestations, tracks custody transitions, and supports visible voiding without deleting history. It is an architecture reference and must be independently audited before production deployment.
+
+The tokenomics and settlement model is documented in [`docs/tokenomics.md`](docs/tokenomics.md). It separates KES material settlement from serialized plastic-impact and carbon-impact attributes, defines illustrative allocation rules, explains no-double-counting controls, and explicitly defers a speculative TRACE token until the operational model is mature.

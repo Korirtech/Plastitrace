@@ -14,6 +14,10 @@ create type verification_result as enum ('pass', 'fail', 'needs_review');
 create type custody_party_kind as enum ('collector', 'hub', 'verifier', 'processor', 'buyer');
 create type evidence_kind as enum ('weight_ticket', 'material_photo', 'geo_capture', 'collector_signature', 'quality_check', 'dispatch_note');
 create type anchor_state as enum ('queued', 'submitted', 'confirmed', 'failed');
+create type settlement_state as enum ('draft', 'approved', 'queued', 'paid', 'failed', 'reversed');
+create type settlement_entry_kind as enum ('material_proceeds', 'collector_payout', 'hub_fee', 'verification_fee', 'impact_reserve', 'platform_fee', 'treasury_allocation', 'credit_sale');
+create type impact_attribute_type as enum ('PRC_COLLECTION', 'PRC_RECYCLING', 'CIU');
+create type credit_state as enum ('measured', 'reserved', 'issued', 'transferred', 'retired', 'reversed', 'cancelled');
 
 -- Tenant boundary. Every operational record below belongs to one organization.
 create table organizations (
@@ -251,3 +255,125 @@ create table audit_log (
 comment on table recovery_lots is 'Primary digital identity for a recoverable material lot.';
 comment on table evidence_assets is 'Evidence hashes and references; binary files live in object storage.';
 comment on table blockchain_anchors is 'On-chain attestation bridge; contains no PII or raw evidence.';
+
+-- Financial settlement is kept separate from the material identity registry.
+-- Rules are versioned so historical payouts can be explained and recalculated.
+create table settlement_rules (
+  id uuid primary key default gen_random_uuid(),
+  organization_id uuid not null references organizations(id) on delete restrict,
+  version text not null,
+  currency char(3) not null default 'KES',
+  source_collector_bps integer not null check (source_collector_bps >= 0),
+  hub_bps integer not null check (hub_bps >= 0),
+  verification_bps integer not null check (verification_bps >= 0),
+  impact_reserve_bps integer not null check (impact_reserve_bps >= 0),
+  platform_bps integer not null check (platform_bps >= 0),
+  treasury_bps integer not null check (treasury_bps >= 0),
+  effective_from timestamptz not null default now(),
+  effective_until timestamptz,
+  created_by uuid not null references profiles(id) on delete restrict,
+  created_at timestamptz not null default now(),
+  unique (organization_id, version),
+  check (source_collector_bps + hub_bps + verification_bps + impact_reserve_bps + platform_bps + treasury_bps = 10000),
+  check (effective_until is null or effective_until > effective_from)
+);
+
+create table settlements (
+  id uuid primary key default gen_random_uuid(),
+  organization_id uuid not null references organizations(id) on delete restrict,
+  lot_id uuid not null references recovery_lots(id) on delete restrict,
+  rule_id uuid not null references settlement_rules(id) on delete restrict,
+  gross_amount_minor bigint not null check (gross_amount_minor >= 0),
+  currency char(3) not null default 'KES',
+  state settlement_state not null default 'draft',
+  payment_provider text,
+  provider_reference text,
+  calculation_inputs jsonb not null default '{}'::jsonb,
+  calculation_snapshot jsonb not null default '{}'::jsonb,
+  approved_by uuid references profiles(id) on delete set null,
+  paid_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (lot_id, rule_id)
+);
+
+create index settlements_org_state_idx on settlements (organization_id, state, created_at desc);
+
+create table settlement_entries (
+  id uuid primary key default gen_random_uuid(),
+  settlement_id uuid not null references settlements(id) on delete restrict,
+  kind settlement_entry_kind not null,
+  account_party_id uuid,
+  amount_minor bigint not null check (amount_minor >= 0),
+  currency char(3) not null default 'KES',
+  created_at timestamptz not null default now()
+);
+
+create index settlement_entries_settlement_idx on settlement_entries (settlement_id, kind);
+
+create table impact_allocations (
+  id uuid primary key default gen_random_uuid(),
+  organization_id uuid not null references organizations(id) on delete restrict,
+  lot_id uuid not null references recovery_lots(id) on delete restrict,
+  attribute_type impact_attribute_type not null,
+  methodology_version text not null,
+  eligible_grams bigint not null check (eligible_grams >= 0),
+  allocated_grams bigint not null check (allocated_grams >= 0),
+  allocation_root text not null check (allocation_root ~ '^[a-f0-9]{64}$'),
+  state credit_state not null default 'measured',
+  beneficiary_organization_id uuid references organizations(id) on delete restrict,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (lot_id, attribute_type, methodology_version),
+  check (allocated_grams <= eligible_grams)
+);
+
+create table credit_series (
+  id uuid primary key default gen_random_uuid(),
+  organization_id uuid not null references organizations(id) on delete restrict,
+  series_code text not null,
+  attribute_type impact_attribute_type not null,
+  methodology_version text not null,
+  vintage smallint not null check (vintage between 2000 and 2200),
+  unit_grams integer not null default 1000 check (unit_grams > 0),
+  allocation_root text not null check (allocation_root ~ '^[a-f0-9]{64}$'),
+  issued_units bigint not null default 0 check (issued_units >= 0),
+  retired_units bigint not null default 0 check (retired_units >= 0),
+  state credit_state not null default 'measured',
+  contract_address text,
+  chain_series_id bigint,
+  created_at timestamptz not null default now(),
+  unique (organization_id, series_code),
+  check (retired_units <= issued_units)
+);
+
+create table credit_events (
+  id uuid primary key default gen_random_uuid(),
+  series_id uuid not null references credit_series(id) on delete restrict,
+  event_type text not null check (event_type in ('measured', 'reserved', 'issued', 'transferred', 'retired', 'reversed', 'cancelled')),
+  units bigint not null check (units > 0),
+  from_organization_id uuid references organizations(id) on delete restrict,
+  to_organization_id uuid references organizations(id) on delete restrict,
+  retirement_reason text,
+  transaction_hash text check (transaction_hash is null or transaction_hash ~ '^0x[a-fA-F0-9]{64}$'),
+  created_by uuid references profiles(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+
+create table credit_retirements (
+  id uuid primary key default gen_random_uuid(),
+  series_id uuid not null references credit_series(id) on delete restrict,
+  beneficiary_organization_id uuid not null references organizations(id) on delete restrict,
+  units bigint not null check (units > 0),
+  claim_text text not null,
+  claim_period_start date,
+  claim_period_end date,
+  retirement_certificate_hash text not null check (retirement_certificate_hash ~ '^[a-f0-9]{64}$'),
+  retired_at timestamptz not null default now(),
+  created_by uuid references profiles(id) on delete set null,
+  check (claim_period_end is null or claim_period_end >= claim_period_start)
+);
+
+create index impact_allocations_lot_idx on impact_allocations (lot_id, attribute_type, state);
+create index credit_events_series_idx on credit_events (series_id, created_at asc);
+create index credit_retirements_series_idx on credit_retirements (series_id, retired_at desc);
