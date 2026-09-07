@@ -1,275 +1,69 @@
-# 🚀 Korir Workspace
+# Plastitrace
 
-> **An AI-powered digital workspace for knowledge management, intelligent document retrieval, project collaboration, and productivity automation.**
+> Digital infrastructure for turning plastic waste into a traceable, measurable, and financially valuable resource.
 
-Korir Workspace is a modern SaaS platform that centralizes documents, AI assistants, knowledge bases, projects, and business workflows into a single intelligent workspace. Powered by Retrieval-Augmented Generation (RAG) and cloud integrations, it enables users to securely organize information, ask questions in natural language, and automate everyday tasks.
+Plastitrace is a Kenya-first recovery intelligence platform. It gives every material lot a digital identity, connects recovery hubs into a network, and makes the value and impact of recovered plastic visible from source to verified bale.
 
----
+## Product direction
 
-## 🌟 Vision
+`Waste → Digital Identity → Verified Material → Measurable Impact → Financial Value → Recycled Product`
 
-To build an intelligent digital workspace where users can manage knowledge, collaborate on projects, automate workflows, and interact with AI to access information quickly and accurately.
+The first vertical slice in this repository is an operations dashboard for the Kenya recovery network. It is designed around the day-to-day questions a network lead needs to answer:
 
----
+- How much material moved through the network and where?
+- Which lots are verified, in review, or pending?
+- What recovery value and avoided emissions are being created?
+- What happened most recently in the chain of custody?
+- How can a field operator quickly record the next intake?
 
-## ✨ Core Features
+## Included in this MVP
 
-### 🤖 AI Knowledge Assistant
+- Responsive Plastitrace operations dashboard with persistent workspace navigation.
+- Network metrics for recovered material, verified lots, recovery value, and CO₂e avoided.
+- Recovery throughput chart with 30-day, 90-day, and 12-month views.
+- Illustrated Kenya recovery network pulse across Nairobi, Mombasa, Kisumu, and Rift Valley.
+- Searchable and filterable material-lot table with traceability statuses.
+- Intake modal that creates a new lot, updates dashboard metrics, and queues the lot for verification.
+- Activity timeline, next-best-action prompt, responsive mobile navigation, and lightweight toast feedback.
 
-- Natural language conversations
-- Context-aware responses
-- Multi-turn chat
-- AI-powered document Q&A
-- Source citations
-- Conversation history
+## Run locally
 
-### 📚 Knowledge Base
-
-- Create and organize knowledge collections
-- Upload and index documents
-- Semantic search with AI
-- Categories and tags
-- Version management
-
-### 📄 Document Management
-
-- Upload PDFs, Word, Excel, CSV, Markdown, and text files
-- Drag-and-drop interface
-- OCR support for images
-- File preview and organization
-- Version history
-
-### ☁️ Cloud Storage Integration
-
-- Google Drive
-- Microsoft OneDrive
-- Dropbox
-- Supabase Storage
-
-### 🔍 Intelligent Search
-
-- Semantic search
-- Keyword search
-- Hybrid search
-- AI-generated summaries
-- Fast document retrieval
-
-### 📋 Workspace Management
-
-- Projects
-- Tasks
-- Notes
-- Knowledge bases
-- Saved prompts
-- AI conversations
-
-### 👥 Collaboration
-
-- Shared workspaces
-- Team roles and permissions
-- Comments
-- Notifications
-- Activity history
-
-### 📊 Analytics Dashboard
-
-- Workspace overview
-- AI usage insights
-- Storage statistics
-- Recent activity
-- Productivity metrics
-
-### 🔐 Authentication & Security
-
-- Email and password login
-- Google authentication
-- GitHub authentication
-- Secure user sessions
-- Role-based access control
-
----
-
-# 🛠 Technology Stack
-
-## Frontend
-
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS
-- shadcn/ui
-
-## Backend
-
-- Node.js
-- Express.js
-
-## Database
-
-- PostgreSQL
-- Supabase
-
-## AI
-
-- OpenAI API
-- Retrieval-Augmented Generation (RAG)
-- Embeddings
-- Semantic Search
-
-## Authentication
-
-- Supabase Auth
-
-## Storage
-
-- Supabase Storage
-
-## Deployment
-
-- Vercel
-- GitHub Actions
-
----
-
-# 📂 Project Structure
-
-```text
-korir-workspace/
-│
-├── app/
-├── components/
-├── hooks/
-├── lib/
-├── services/
-├── types/
-├── public/
-├── prisma/
-├── supabase/
-├── docs/
-├── tests/
-├── styles/
-├── package.json
-├── README.md
-└── .env.example
-```
-
----
-
-# 🚀 Getting Started
-
-## Clone the repository
-
-```bash
-git clone https://github.com/Korir88/korir-workspace.git
-```
-
-## Navigate to the project
-
-```bash
-cd korir-workspace
-```
-
-## Install dependencies
-
-```bash
-npm install
-```
-
-## Configure environment variables
-
-### Supabase setup
-
-1. Create a project in [Supabase](https://supabase.com/dashboard).
-2. In **SQL Editor**, run [`supabase/schema.sql`](supabase/schema.sql).
-3. In **Authentication → URL Configuration**, set the Site URL to your Vercel URL and add that URL to Redirect URLs.
-4. Copy `.env.example` to `.env.local` and add the project URL plus its publishable key. Do not use a service-role key in this app.
-
-For Vercel, add the same values in **Project Settings → Environment Variables** for Production, Preview, and Development, then redeploy.
-
-```env
-SUPABASE_URL=https://your-project-ref.supabase.co
-SUPABASE_PUBLISHABLE_KEY=your-supabase-publishable-key
-```
-
-## Start the development server
+This first slice intentionally has no build dependency or backend requirement. Run it with Python's built-in static server:
 
 ```bash
 npm run dev
 ```
 
-Open your browser and visit:
+Then open [http://localhost:4173](http://localhost:4173).
 
-```text
-http://localhost:5000
+To run the syntax check:
+
+```bash
+npm run check
 ```
 
----
+## Repository structure
 
-# 🗺 Development Roadmap
+```text
+.
+├── index.html     # Dashboard and intake workflow markup
+├── styles.css     # Product design system and responsive styling
+├── app.js         # Interactions, lot data, filtering, and intake state
+├── package.json   # Local development and validation scripts
+└── README.md
+```
 
-## Phase 1 — MVP
+## Next product milestones
 
-- User authentication
-- AI chat interface
-- File upload
-- Knowledge base
-- Semantic search
-- Dashboard
+1. **Field capture:** authenticated collector accounts, offline-first intake capture, GPS/time metadata, and photo evidence.
+2. **Verification:** verifier queue, weighing and contamination checks, evidence attachments, and immutable lot history.
+3. **Value exchange:** buyer offers, payout records, material pricing, and a transparent impact ledger.
+4. **Network expansion:** hub onboarding, route planning, partner permissions, and support for additional African recovery networks.
+5. **Recycled product:** bale dispatch, processor intake, recycled-content certificates, and downstream product traceability.
 
-## Phase 2
+## Design principles
 
-- Google Drive integration
-- OneDrive integration
-- Dropbox integration
-- AI memory
-- Collections and folders
-
-## Phase 3
-
-- Team collaboration
-- AI agents
-- Workflow automation
-- Mobile support
-- Public API
-
----
-
-# 🤝 Contributing
-
-Contributions are welcome!
-
-1. Fork the repository.
-2. Create a feature branch.
-3. Commit your changes.
-4. Push your branch.
-5. Open a Pull Request.
-
-Please follow consistent coding standards and include meaningful commit messages.
-
----
-
-# 📄 License
-
-This project is licensed under the **MIT License**. See the `LICENSE` file for details.
-
----
-
-# 👨‍💻 Author
-
-**Emmanuel Korir**
-
-IT Support Specialist • Full-Stack Developer • AI & Cloud Enthusiast
-
-- GitHub: https://github.com/Korir88
-- Portfolio: *Coming Soon*
-
----
-
-# ⭐ Support
-
-If you find this project useful, please consider giving it a **⭐ Star** on GitHub. Your support helps improve the project and encourages future development.
-# Indulge-Essentials-Store
-# Indulge-Essentials-Store
-# PATANYUMBA
-# PATANYUMBA-AGENT
-# Plastitrace
+- **Traceability before dashboards:** metrics should always link back to a material event.
+- **Field-friendly by default:** every workflow should be usable on a phone and under imperfect connectivity.
+- **Value follows proof:** verification, evidence, and clean custody records unlock financial value.
+- **Kenya first, Africa ready:** start with the local recovery reality while keeping the model extensible.

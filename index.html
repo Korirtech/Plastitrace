@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#11211d" />
+    <meta
+      name="description"
+      content="Plastitrace turns recovered plastic into a verified, measurable asset."
+    />
+    <title>Plastitrace — Recovery intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Primary navigation">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div class="brand-name">plastitrace<span>®</span></div>
+        </div>
+
+        <div class="workspace-switcher">
+          <div class="workspace-avatar">KN</div>
+          <div class="workspace-copy">
+            <strong>Kenya network</strong>
+            <span>Operations workspace</span>
+          </div>
+          <button class="icon-button subtle" aria-label="Switch workspace" data-toast="Workspace switching is coming soon">⌄</button>
+        </div>
+
+        <nav class="nav-group" aria-label="Workspace">
+          <p class="nav-label">Workspace</p>
+          <button class="nav-item active" data-view="overview">
+            <span class="nav-icon" data-icon="grid"></span>
+            <span>Overview</span>
+            <span class="nav-pill">Live</span>
+          </button>
+          <button class="nav-item" data-view="lots">
+            <span class="nav-icon" data-icon="layers"></span>
+            <span>Material lots</span>
+            <span class="nav-count" id="nav-total-lots">86</span>
+          </button>
+          <button class="nav-item" data-view="network">
+            <span class="nav-icon" data-icon="network"></span>
+            <span>Recovery network</span>
+          </button>
+          <button class="nav-item" data-view="ledger">
+            <span class="nav-icon" data-icon="pulse"></span>
+            <span>Impact ledger</span>
+          </button>
+        </nav>
+
+        <nav class="nav-group nav-group-secondary" aria-label="Manage">
+          <p class="nav-label">Manage</p>
+          <button class="nav-item" data-toast="Partners will be available in the next release">
+            <span class="nav-icon" data-icon="users"></span>
+            <span>Partners</span>
+          </button>
+          <button class="nav-item" data-toast="Reporting will be available in the next release">
+            <span class="nav-icon" data-icon="file"></span>
+            <span>Reports</span>
+          </button>
+          <button class="nav-item" data-toast="Settings will be available in the next release">
+            <span class="nav-icon" data-icon="settings"></span>
+            <span>Settings</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="help-card">
+            <span class="help-orbit" aria-hidden="true">?</span>
+            <div>
+              <strong>Need a hand?</strong>
+              <span>Read the field guide</span>
+            </div>
+            <span class="arrow">↗</span>
+          </div>
+          <div class="profile-row">
+            <div class="profile-avatar">AM</div>
+            <div class="profile-copy"><strong>Amina Mwangi</strong><span>Network lead</span></div>
+            <button class="icon-button subtle" aria-label="Open profile menu" data-toast="Profile menu is coming soon">⋮</button>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <button class="mobile-menu icon-button" aria-label="Open navigation">☰</button>
+          <div class="breadcrumbs"><span>Kenya network</span><span class="crumb-separator">/</span><strong>Overview</strong></div>
+          <div class="topbar-actions">
+            <span class="sync-status"><span class="sync-dot"></span>Synced 4 min ago</span>
+            <button class="icon-button notification-button" aria-label="Notifications" data-toast="You're all caught up"><span data-icon="bell"></span><i></i></button>
+            <button class="profile-avatar topbar-profile" aria-label="Open profile menu" data-toast="Profile menu is coming soon">AM</button>
+          </div>
+        </header>
+
+        <div class="content-wrap">
+          <section class="hero-row">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-dot"></span>Recovery intelligence · Monday, 07 September 2026</p>
+              <h1>Good morning, Amina.</h1>
+              <p class="hero-copy">Turn every kilogram into a verified asset.</p>
+            </div>
+            <div class="hero-actions">
+              <button class="button button-ghost" data-toast="Report export is being prepared"><span data-icon="download"></span>Export report</button>
+              <button class="button button-primary" data-open-intake><span data-icon="plus"></span>Record intake</button>
+            </div>
+          </section>
+
+          <section class="metric-grid" aria-label="Network metrics">
+            <article class="metric-card metric-dark">
+              <div class="metric-top"><span class="metric-label">Material recovered</span><span class="metric-icon" data-icon="scale"></span></div>
+              <div class="metric-value"><strong id="total-weight">24.8</strong><span>t</span></div>
+              <div class="metric-foot"><span class="trend positive">↗ 12.4%</span><span>vs last month</span></div>
+              <div class="metric-sparkline dark-spark" aria-hidden="true"><svg viewBox="0 0 240 48" preserveAspectRatio="none"><path d="M0 41 C18 39, 18 33, 35 35 S51 26, 66 29 S82 22, 97 25 S111 11, 126 18 S146 9, 162 13 S181 4, 194 10 S215 4, 240 1" fill="none" stroke="#c8f26a" stroke-width="3" stroke-linecap="round"/><path d="M0 48 L0 41 C18 39, 18 33, 35 35 S51 26, 66 29 S82 22, 97 25 S111 11, 126 18 S146 9, 162 13 S181 4, 194 10 S215 4, 240 1 L240 48Z" fill="url(#darkFill)" opacity=".24"/><defs><linearGradient id="darkFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8f26a"/><stop offset="1" stop-color="#c8f26a" stop-opacity="0"/></linearGradient></defs></svg></div>
+            </article>
+            <article class="metric-card metric-lime">
+              <div class="metric-top"><span class="metric-label">Verified material lots</span><span class="metric-icon" data-icon="check"></span></div>
+              <div class="metric-value"><strong id="total-lots">86</strong><span>lots</span></div>
+              <div class="metric-foot"><span class="trend dark-trend">↗ 8.1%</span><span>vs last month</span></div>
+              <div class="mini-bars" aria-hidden="true"><span style="height: 32%"></span><span style="height: 48%"></span><span style="height: 40%"></span><span style="height: 68%"></span><span style="height: 57%"></span><span style="height: 82%"></span><span style="height: 100%"></span></div>
+            </article>
+            <article class="metric-card metric-paper">
+              <div class="metric-top"><span class="metric-label">Recovery value</span><span class="metric-icon" data-icon="coins"></span></div>
+              <div class="metric-value"><span>KES</span><strong id="total-value">1.84</strong><span>m</span></div>
+              <div class="metric-foot"><span class="trend positive">↗ 15.7%</span><span>vs last month</span></div>
+              <div class="metric-line" aria-hidden="true"><span></span><i></i></div>
+            </article>
+            <article class="metric-card metric-sage">
+              <div class="metric-top"><span class="metric-label">CO₂e avoided</span><span class="metric-icon" data-icon="leaf"></span></div>
+              <div class="metric-value"><strong id="total-impact">63.2</strong><span>t</span></div>
+              <div class="metric-foot"><span class="trend positive">↗ 10.2%</span><span>vs last month</span></div>
+              <div class="impact-ring" aria-hidden="true"><span>82%</span></div>
+            </article>
+          </section>
+
+          <section class="dashboard-grid">
+            <article class="panel throughput-panel">
+              <div class="panel-heading">
+                <div><p class="section-kicker">Network throughput</p><h2>Recovery performance</h2></div>
+                <div class="segmented-control" role="group" aria-label="Chart time range"><button class="selected" data-range="30d">30 days</button><button data-range="90d">90 days</button><button data-range="12m">12 months</button></div>
+              </div>
+              <div class="chart-legend"><span><i class="legend-dot lime"></i>Verified material</span><span><i class="legend-dot orange"></i>Pending verification</span><strong id="chart-total">8.42 t <small>this period</small></strong></div>
+              <div class="chart-wrap">
+                <div class="y-axis"><span>1.2t</span><span>0.9t</span><span>0.6t</span><span>0.3t</span><span>0</span></div>
+                <svg class="throughput-chart" viewBox="0 0 780 280" preserveAspectRatio="none" role="img" aria-label="Recovery throughput chart showing verified material rising through the period">
+                  <defs>
+                    <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b8eb5f" stop-opacity=".38"/><stop offset="1" stop-color="#b8eb5f" stop-opacity="0"/></linearGradient>
+                  </defs>
+                  <g class="chart-gridlines"><line x1="0" y1="14" x2="780" y2="14"/><line x1="0" y1="75" x2="780" y2="75"/><line x1="0" y1="136" x2="780" y2="136"/><line x1="0" y1="197" x2="780" y2="197"/><line x1="0" y1="258" x2="780" y2="258"/></g>
+                  <path class="chart-area" d="M0 225 C24 218 32 219 54 207 S88 198 108 206 S143 173 162 181 S198 167 216 174 S249 134 270 151 S305 122 324 136 S362 128 378 108 S415 132 432 111 S466 87 487 95 S521 73 540 88 S575 47 594 64 S629 48 648 41 S685 26 702 34 S743 21 780 17 L780 258 L0 258Z" fill="url(#areaFill)"/>
+                  <path class="chart-line" d="M0 225 C24 218 32 219 54 207 S88 198 108 206 S143 173 162 181 S198 167 216 174 S249 134 270 151 S305 122 324 136 S362 128 378 108 S415 132 432 111 S466 87 487 95 S521 73 540 88 S575 47 594 64 S629 48 648 41 S685 26 702 34 S743 21 780 17" fill="none" stroke="#a9df52" stroke-width="4" stroke-linecap="round"/>
+                  <path class="pending-line" d="M0 246 C28 242 33 236 55 240 S90 231 109 236 S143 220 162 229 S195 213 216 223 S251 201 270 211 S303 193 324 203 S360 184 378 196 S415 181 432 188 S467 174 487 184 S522 162 540 175 S575 151 594 160 S630 140 648 149 S684 125 702 137 S744 115 780 124" fill="none" stroke="#eb8e53" stroke-width="2.5" stroke-dasharray="5 7" stroke-linecap="round"/>
+                  <g class="chart-point"><circle cx="594" cy="64" r="6"/><circle cx="702" cy="34" r="6"/><circle cx="780" cy="17" r="6"/></g>
+                </svg>
+                <div class="x-axis"><span>12 Aug</span><span>19 Aug</span><span>26 Aug</span><span>02 Sep</span><span>07 Sep</span></div>
+              </div>
+              <div class="chart-callout"><span class="callout-icon" data-icon="spark"></span><span><strong>+18.6%</strong> recovery rate this period. The network is on track to hit <strong>30t</strong> by quarter end.</span><button class="text-button" data-toast="Forecast detail is coming soon">View forecast <span>→</span></button></div>
+            </article>
+
+            <article class="panel pulse-panel">
+              <div class="panel-heading"><div><p class="section-kicker">Where recovery happens</p><h2>Network pulse</h2></div><button class="more-button" aria-label="More network options" data-toast="More options are coming soon">•••</button></div>
+              <div class="pulse-map" aria-label="Illustrated map of Kenya recovery hubs">
+                <div class="map-grid"></div><div class="map-outline"></div><span class="map-label label-nairobi">Nairobi <b></b></span><span class="map-label label-mombasa">Mombasa <b></b></span><span class="map-label label-kisumu">Kisumu <b></b></span><span class="map-label label-nakuru">Nakuru <b></b></span><span class="map-label label-eldoret">Eldoret <b></b></span>
+              </div>
+              <div class="hub-list">
+                <div class="hub-row"><div class="hub-name"><span class="hub-dot live"></span><div><strong>Nairobi Metro</strong><span>42 active collectors</span></div></div><div class="hub-stat"><strong>12.6t</strong><span>51%</span></div></div>
+                <div class="hub-row"><div class="hub-name"><span class="hub-dot"></span><div><strong>Mombasa Coast</strong><span>18 active collectors</span></div></div><div class="hub-stat"><strong>5.1t</strong><span>21%</span></div></div>
+                <div class="hub-row"><div class="hub-name"><span class="hub-dot"></span><div><strong>Kisumu Lake</strong><span>11 active collectors</span></div></div><div class="hub-stat"><strong>4.2t</strong><span>17%</span></div></div>
+                <div class="hub-row"><div class="hub-name"><span class="hub-dot"></span><div><strong>Rift Valley</strong><span>9 active collectors</span></div></div><div class="hub-stat"><strong>2.9t</strong><span>11%</span></div></div>
+              </div>
+              <button class="button button-secondary full-width" data-view-target="network">View recovery network <span>→</span></button>
+            </article>
+          </section>
+
+          <section class="panel lots-panel">
+            <div class="panel-heading lots-heading"><div><p class="section-kicker">Chain of custody</p><h2>Recent material lots</h2><p class="section-description">Every lot has a digital identity, from first pickup to verified bale.</p></div><div class="table-actions"><label class="search-field"><span data-icon="search"></span><input id="lot-search" type="search" placeholder="Search lots" aria-label="Search material lots" /></label><select id="status-filter" aria-label="Filter lots by status"><option value="all">All statuses</option><option value="Verified">Verified</option><option value="In review">In review</option><option value="Pending">Pending</option></select><button class="button button-ghost compact" data-view-target="lots">View all <span>→</span></button></div></div>
+            <div class="table-scroll"><table><thead><tr><th>Lot ID</th><th>Material</th><th>Source & route</th><th>Weight</th><th>Traceability</th><th>Value</th><th>Recorded</th><th><span class="sr-only">Actions</span></th></tr></thead><tbody id="lots-body"></tbody></table></div>
+            <div class="table-footer"><span>Showing <strong id="showing-count">6</strong> of <strong id="lots-total-count">86</strong> lots</span><div class="pagination"><button aria-label="Previous page" disabled>←</button><button class="page-active">1</button><button data-toast="Pagination is available in the full lots view">2</button><button data-toast="Pagination is available in the full lots view">3</button><span>…</span><button data-toast="Pagination is available in the full lots view">15</button><button aria-label="Next page" data-toast="Pagination is available in the full lots view">→</button></div></div>
+          </section>
+
+          <section class="bottom-grid">
+            <article class="panel timeline-panel"><div class="panel-heading"><div><p class="section-kicker">Latest movement</p><h2>Traceability signal</h2></div><span class="live-badge"><i></i> Live feed</span></div><div class="timeline"><div class="timeline-item"><span class="timeline-marker marker-lime" data-icon="scan"></span><div><strong>Lot <em>PT-24086</em> verified</strong><p>HDPE · 428 kg · Nairobi Metro</p><span>12 minutes ago</span></div></div><div class="timeline-item"><span class="timeline-marker marker-orange" data-icon="truck"></span><div><strong>Pickup route completed</strong><p>Westlands → Industrial Area · 6 stops</p><span>41 minutes ago</span></div></div><div class="timeline-item"><span class="timeline-marker marker-sage" data-icon="user"></span><div><strong>New collector onboarded</strong><p>Wanjiku's Green Team · Kasarani</p><span>2 hours ago</span></div></div></div><button class="text-button" data-toast="Activity history is coming soon">View activity history <span>→</span></button></article>
+            <article class="panel action-panel"><div class="action-art"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><span class="art-leaf" data-icon="leaf"></span></div><div><p class="section-kicker">Next best action</p><h2>Make your next pickup count.</h2><p>Record material at source so every kilogram keeps its story — and its value.</p><button class="button button-primary" data-open-intake>Record an intake <span>→</span></button></div></article>
+          </section>
+          <footer class="page-footer"><span>Plastitrace <b>•</b> Recovery intelligence for a circular Kenya</span><span>Data updates every 15 minutes <i></i></span></footer>
+        </div>
+      </main>
+    </div>
+
+    <div class="modal-backdrop" id="intake-modal" hidden>
+      <section class="modal" role="dialog" aria-modal="true" aria-labelledby="intake-title">
+        <div class="modal-header"><div><p class="section-kicker">New chain-of-custody event</p><h2 id="intake-title">Record an intake</h2><p>Give this material its first digital identity.</p></div><button class="close-button" aria-label="Close intake form" data-close-intake>×</button></div>
+        <form id="intake-form">
+          <div class="form-grid"><label>Material type<select name="material" required><option>HDPE</option><option>PET</option><option>PP</option><option>LDPE film</option><option>Mixed plastics</option></select></label><label>Weight (kg)<input name="weight" type="number" min="1" step="1" placeholder="e.g. 320" required /></label></div>
+          <label>Collection source<input name="source" type="text" placeholder="e.g. Eastleigh collection point" required /></label>
+          <div class="form-grid"><label>Recovery hub<select name="hub" required><option>Nairobi Metro</option><option>Mombasa Coast</option><option>Kisumu Lake</option><option>Rift Valley</option></select></label><label>Recorded by<select name="collector" required><option>Amina Mwangi</option><option>David Ochieng</option><option>Wanjiku's Green Team</option></select></label></div>
+          <div class="form-note"><span data-icon="info"></span><span>This lot will enter <strong>In review</strong> until a verifier confirms material type and weight.</span></div>
+          <div class="modal-actions"><button type="button" class="button button-ghost" data-close-intake>Cancel</button><button type="submit" class="button button-primary">Create lot <span>→</span></button></div>
+        </form>
+      </section>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"><span class="toast-check">✓</span><span id="toast-message">Saved</span></div>
+    <script src="app.js"></script>
+  </body>
+</html>
