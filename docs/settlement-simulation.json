@@ -1,0 +1,67 @@
+{
+  "simulation": {
+    "id": "SIM-NBO-2026-09-07-001",
+    "location": "Nairobi Metro / Eastleigh collection hub",
+    "lot_id": "PT-NBO-260907-001",
+    "material": "HDPE",
+    "collector_group": "Eastleigh Green Team",
+    "buyer": "Nairobi Circularity Buyer",
+    "rule_version": "pilot-2026-01",
+    "status": "verified for material settlement; impact measured, not issued"
+  },
+  "input": {
+    "accepted_weight_kg": "1000",
+    "buyer_price_kes_per_kg": "80",
+    "gross_material_proceeds_kes": "80000.00",
+    "baseline_collection_kg": "200",
+    "recycled_output_kg": "750",
+    "baseline_recycling_kg": "0"
+  },
+  "material_settlement": {
+    "currency": "KES",
+    "state": "paid",
+    "payment_reference": "SIM-MPESA-0001",
+    "gross_proceeds_kes": "80000.00",
+    "waterfall_kes": {
+      "Source collector network": "52000.00",
+      "Recovery hub": "8000.00",
+      "Verification and data quality": "6400.00",
+      "Impact reserve": "5600.00",
+      "Plastitrace platform": "4000.00",
+      "Network treasury": "4000.00"
+    },
+    "waterfall_total_kes": "80000.00"
+  },
+  "impact_ledger": {
+    "collection": {
+      "eligible_kg": "800",
+      "measured_units": "0.80",
+      "whole_units_issuable": 0,
+      "state": "measured"
+    },
+    "recycling": {
+      "eligible_kg": "750",
+      "measured_units": "0.75",
+      "whole_units_issuable": 0,
+      "state": "measured"
+    },
+    "carbon": {
+      "methodology_factor_kgco2e_per_kg": "1.35",
+      "uncertainty_buffer_kgco2e": "12.5",
+      "co2e_avoided_kg": "1000.00",
+      "measured_units": "1.00",
+      "whole_units_issuable": 1,
+      "state": "measured",
+      "note": "Illustrative methodology assumption; not a certified carbon credit."
+    },
+    "credit_revenue_kes": "0.00",
+    "credit_revenue_note": "No impact-credit sale occurs in this settlement. Any later credit sale uses a separate waterfall."
+  },
+  "controls": {
+    "lot_state": "verified",
+    "blockchain_anchor": "confirmed:simulated:0x7c8e...91af",
+    "double_counting_key": "PT-NBO-260907-001|HDPE|1000kg",
+    "claimable_public_impact": false,
+    "release_condition": "Material payout released after verified quantity and accepted handoff; impact units remain locked until issuance and retirement gates pass."
+  }
+}

@@ -77,3 +77,9 @@ The PostgreSQL design is in [`docs/database-schema.sql`](docs/database-schema.sq
 The Solidity registry skeleton is in [`docs/contracts/PlastiTraceRegistry.sol`](docs/contracts/PlastiTraceRegistry.sol). It registers material identities, anchors evidence, records verifier attestations, tracks custody transitions, and supports visible voiding without deleting history. It is an architecture reference and must be independently audited before production deployment.
 
 The tokenomics and settlement model is documented in [`docs/tokenomics.md`](docs/tokenomics.md). It separates KES material settlement from serialized plastic-impact and carbon-impact attributes, defines illustrative allocation rules, explains no-double-counting controls, and explicitly defers a speculative TRACE token until the operational model is mature.
+
+## Simulation and presentation
+
+A deterministic Nairobi hub settlement simulation lives in [`docs/settlement-simulation.md`](docs/settlement-simulation.md) (report) and [`docs/settlement-simulation.json`](docs/settlement-simulation.json) (data). It models a 1,000 kg HDPE intake through the versioned allocation waterfall, resulting in a KES 52,000 collector payout and locked impact attributes.
+
+The tokenomics pitch deck is archived at [`docs/presentations/tokenomics-pitch-deck.pdf`](docs/presentations/tokenomics-pitch-deck.pdf). It presents the three-ledger model, transaction lifecycle, integrity controls, and phased delivery roadmap.
