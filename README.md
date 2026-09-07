@@ -83,3 +83,7 @@ The tokenomics and settlement model is documented in [`docs/tokenomics.md`](docs
 A deterministic Nairobi hub settlement simulation lives in [`docs/settlement-simulation.md`](docs/settlement-simulation.md) (report) and [`docs/settlement-simulation.json`](docs/settlement-simulation.json) (data). It models a 1,000 kg HDPE intake through the versioned allocation waterfall, resulting in a KES 52,000 collector payout and locked impact attributes.
 
 The tokenomics pitch deck is archived at [`docs/presentations/tokenomics-pitch-deck.pdf`](docs/presentations/tokenomics-pitch-deck.pdf). It presents the three-ledger model, transaction lifecycle, integrity controls, and phased delivery roadmap.
+
+## Render deployment
+
+The repository includes [`render.yaml`](render.yaml), a Render Blueprint for the current dependency-free static site. In Render, choose **New → Blueprint**, connect the Plastitrace repository, and select the `main` branch. Render will run `npm run check` and publish the repository root as a static site.
