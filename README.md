@@ -87,3 +87,7 @@ The tokenomics pitch deck is archived at [`docs/presentations/tokenomics-pitch-d
 ## Render deployment
 
 The repository includes [`render.yaml`](render.yaml), a Render Blueprint for the current dependency-free static site. In Render, choose **New → Blueprint**, connect the Plastitrace repository, and select the `main` branch. Render will run `npm run check` and publish the repository root as a static site.
+
+## Operations pages
+
+The dashboard now includes working client-side views for **Material lots**, **Recovery network**, and **Impact ledger**. These pages reuse the current app data and visual system, with lot search and status filters, hub performance and capacity signals, and methodology-aware impact states.
