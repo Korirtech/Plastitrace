@@ -67,3 +67,11 @@ npm run check
 - **Field-friendly by default:** every workflow should be usable on a phone and under imperfect connectivity.
 - **Value follows proof:** verification, evidence, and clean custody records unlock financial value.
 - **Kenya first, Africa ready:** start with the local recovery reality while keeping the model extensible.
+
+## Architecture foundations
+
+The first architecture slice now lives in [`docs/architecture.md`](docs/architecture.md). It defines the hybrid boundary between the operational database and the public proof layer, including the lot identity model, lifecycle transitions, privacy rules, anchoring outbox, role model, and phased delivery plan.
+
+The PostgreSQL design is in [`docs/database-schema.sql`](docs/database-schema.sql). It covers tenant isolation, hubs, collectors, lots, append-only events, evidence hashes, verification checks, custody transfers, impact calculations, value quotes, payouts, blockchain anchors, and audit history.
+
+The Solidity registry skeleton is in [`docs/contracts/PlastiTraceRegistry.sol`](docs/contracts/PlastiTraceRegistry.sol). It registers material identities, anchors evidence, records verifier attestations, tracks custody transitions, and supports visible voiding without deleting history. It is an architecture reference and must be independently audited before production deployment.
