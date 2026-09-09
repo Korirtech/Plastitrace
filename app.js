@@ -231,7 +231,7 @@ function updateMetrics(weight, value) {
   impactNode.textContent = (currentImpact + weight * .00255).toFixed(1);
 }
 
-const overviewParts = ['.hero-row', '.metric-grid', '.identity-panel', '.settlement-panel', '.dashboard-grid', '.lots-panel', '.bottom-grid'];
+const overviewParts = ['.hero-row', '.overview-brief', '.metric-grid', '.identity-panel', '.overview-links', '.settlement-panel', '.dashboard-grid', '.lots-panel', '.bottom-grid'];
 const routePages = document.querySelector('#route-pages');
 const pageNames = { overview: 'Overview', lots: 'Material lots', network: 'Recovery network', ledger: 'Impact ledger' };
 
@@ -274,6 +274,7 @@ function renderLedgerPage() {
 }
 
 function navigate(view) {
+  document.body.classList.toggle('route-active', view !== 'overview');
   setActiveNav(view);
   document.querySelector('#breadcrumb-view').textContent = pageNames[view];
   overviewParts.forEach((selector) => { document.querySelector(selector).style.display = view === 'overview' ? '' : 'none'; });

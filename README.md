@@ -97,3 +97,7 @@ The dashboard now includes working client-side views for **Material lots**, **Re
 The Material Lots register now includes a browser-side `PlastiTraceRegistry` reader using ethers v6 and the EIP-1193 wallet provider or a configured JSON-RPC endpoint. It reads `getLot(bytes32)` for each visible lot, maps the Solidity `LotState` to the register, reconciles on-chain quantity, displays the latest block, and refreshes on new blocks when the provider supports subscriptions.
 
 Set the deployed audited registry address and RPC endpoint in [`chain-config.js`](chain-config.js). The adapter intentionally starts in an explicit **Chain not configured** state when those values are empty; it never labels an off-chain demo row as on-chain verified. Production deployment still requires contract audit, role setup, finality handling, and a managed RPC endpoint.
+
+## Overview information architecture
+
+Overview is intentionally a minimal executive snapshot: core network KPIs, identity coverage, registry status, and three clear handoffs. Detailed custody operations, hub performance, and impact allocation records remain on the dedicated Material Lots, Recovery Network, and Impact Ledger pages so each workflow has room to stay useful and legible.

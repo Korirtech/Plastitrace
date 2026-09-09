@@ -165,7 +165,13 @@
             <div class="identity-meta"><span><i class="status-beacon"></i> 82% identity coverage</span><span>Latest anchor <strong>PT-24086</strong> · 12 min ago</span><button class="text-button" data-toast="Public verification pages are coming soon">View verification layer <span>→</span></button></div>
           </section>
 
-          <section class="settlement-panel" aria-labelledby="settlement-title">
+          <section class="overview-links" aria-label="Explore operations areas">
+            <a class="overview-link-card" href="#material-lots" data-view-target="lots"><span class="overview-link-icon lime-icon" data-icon="scan"></span><span><small>Operations</small><strong>Material lots</strong><em>Inspect custody and verification</em></span><b>→</b></a>
+            <a class="overview-link-card" href="#recovery-network" data-view-target="network"><span class="overview-link-icon chain-icon" data-icon="network"></span><span><small>Network</small><strong>Recovery network</strong><em>See hubs, capacity, and routes</em></span><b>→</b></a>
+            <a class="overview-link-card" href="#impact-ledger" data-view-target="ledger"><span class="overview-link-icon alert-icon" data-icon="shield"></span><span><small>Integrity</small><strong>Impact ledger</strong><em>Track measured and claimable value</em></span><b>→</b></a>
+          </section>
+
+          <section class="settlement-panel overview-detail" aria-labelledby="settlement-title">
             <div class="settlement-copy">
               <div class="settlement-badge"><span data-icon="coins"></span> Settlement engine</div>
               <p class="section-kicker">From verified weight to value</p>
@@ -183,7 +189,7 @@
             <div class="settlement-queue"><div class="queue-heading"><span>Settlement queue</span><strong>3 items</strong></div><div class="queue-line"><span><i class="queue-dot lime"></i>Material payout</span><b>KES 84,420</b><em>Approved</em></div><div class="queue-line"><span><i class="queue-dot orange"></i>Impact review</span><b>18.4 units</b><em class="waiting">Pending</em></div><div class="queue-line"><span><i class="queue-dot sage"></i>Reserve hold</span><b>KES 5,600</b><em>Protected</em></div></div>
           </section>
 
-          <section class="dashboard-grid">
+          <section class="dashboard-grid overview-detail">
             <article class="panel throughput-panel">
               <div class="panel-heading">
                 <div><p class="section-kicker">Network throughput</p><h2>Recovery performance</h2></div>
@@ -222,13 +228,13 @@
             </article>
           </section>
 
-          <section class="panel lots-panel">
+          <section class="panel lots-panel overview-detail">
             <div class="panel-heading lots-heading"><div><p class="section-kicker">Chain of custody</p><h2>Recent material lots</h2><p class="section-description">Every lot has a digital identity, from first pickup to verified bale.</p></div><div class="table-actions"><label class="search-field"><span data-icon="search"></span><input id="lot-search" type="search" placeholder="Search lots" aria-label="Search material lots" /></label><select id="status-filter" aria-label="Filter lots by status"><option value="all">All statuses</option><option value="Verified">Verified</option><option value="In review">In review</option><option value="Pending">Pending</option></select><button class="button button-ghost compact" data-view-target="lots">View all <span>→</span></button></div></div>
             <div class="table-scroll"><table><thead><tr><th>Lot ID</th><th>Material</th><th>Source & route</th><th>Weight</th><th>Traceability</th><th>Value</th><th>Recorded</th><th><span class="sr-only">Actions</span></th></tr></thead><tbody id="lots-body"></tbody></table></div>
             <div class="table-footer"><span>Showing <strong id="showing-count">6</strong> of <strong id="lots-total-count">86</strong> lots</span><div class="pagination"><button aria-label="Previous page" disabled>←</button><button class="page-active">1</button><button data-toast="Pagination is available in the full lots view">2</button><button data-toast="Pagination is available in the full lots view">3</button><span>…</span><button data-toast="Pagination is available in the full lots view">15</button><button aria-label="Next page" data-toast="Pagination is available in the full lots view">→</button></div></div>
           </section>
 
-          <section class="bottom-grid">
+          <section class="bottom-grid overview-detail">
             <article class="panel timeline-panel"><div class="panel-heading"><div><p class="section-kicker">Latest movement</p><h2>Traceability signal</h2></div><span class="live-badge"><i></i> Live feed</span></div><div class="timeline"><div class="timeline-item"><span class="timeline-marker marker-lime" data-icon="scan"></span><div><strong>Lot <em>PT-24086</em> verified</strong><p>HDPE · 428 kg · Nairobi Metro</p><span>12 minutes ago</span></div></div><div class="timeline-item"><span class="timeline-marker marker-orange" data-icon="truck"></span><div><strong>Pickup route completed</strong><p>Westlands → Industrial Area · 6 stops</p><span>41 minutes ago</span></div></div><div class="timeline-item"><span class="timeline-marker marker-sage" data-icon="user"></span><div><strong>New collector onboarded</strong><p>Wanjiku's Green Team · Kasarani</p><span>2 hours ago</span></div></div></div><button class="text-button" data-toast="Activity history is coming soon">View activity history <span>→</span></button></article>
             <article class="panel action-panel"><div class="action-art"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><span class="art-leaf" data-icon="leaf"></span></div><div><p class="section-kicker">Next best action</p><h2>Make your next pickup count.</h2><p>Record material at source so every kilogram keeps its story — and its value.</p><button class="button button-primary" data-open-intake>Record an intake <span>→</span></button></div></article>
           </section>

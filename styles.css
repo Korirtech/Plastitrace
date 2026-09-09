@@ -291,3 +291,23 @@ td:first-child { color: #3b5844; font-family: "Space Grotesk", sans-serif; font-
 @media (max-width: 1180px) { .overview-brief { grid-template-columns: 1.3fr repeat(3, 1fr); }.brief-signal { padding: 15px 10px; } }
 @media (max-width: 760px) { .hero-row h1 { font-size: 31px; }.overview-brief { grid-template-columns: 1fr 1fr; }.brief-intro { grid-column: 1 / -1; border-right: 0; border-bottom: 1px solid #d8e1d5; }.brief-signal:nth-child(3) { border-right: 0; }.brief-signal { padding: 14px 12px; } }
 @media (max-width: 520px) { .overview-brief { grid-template-columns: 1fr; }.brief-intro { grid-column: auto; }.brief-signal { border-right: 0; border-bottom: 1px solid #d8e1d5; }.brief-signal:last-child { border-bottom: 0; } }
+
+/* Minimal executive Overview: detailed operations live on their dedicated routes. */
+.overview-detail { display: none !important; }
+.overview-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
+.overview-link-card { display: flex; align-items: center; gap: 11px; min-width: 0; padding: 15px 16px; border: 1px solid var(--line); border-radius: 11px; color: inherit; background: rgba(255,255,255,.74); text-decoration: none; transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease; }
+.overview-link-card:hover { border-color: #c3d2bf; box-shadow: 0 8px 24px rgba(18,36,29,.06); transform: translateY(-2px); }
+.overview-link-icon { display: grid; width: 32px; height: 32px; flex: 0 0 auto; place-items: center; border-radius: 9px; }
+.overview-link-icon svg { width: 15px; height: 15px; }
+.overview-link-card > span:nth-child(2) { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 3px; }
+.overview-link-card small { color: #89988e; font-size: 8px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.overview-link-card strong { color: var(--ink); font-family: "Space Grotesk", sans-serif; font-size: 13px; letter-spacing: -.25px; }
+.overview-link-card em { overflow: hidden; color: var(--ink-soft); font-size: 9px; font-style: normal; text-overflow: ellipsis; white-space: nowrap; }
+.overview-link-card b { color: #78936d; font-size: 17px; font-weight: 400; }
+@media (max-width: 760px) { .overview-links { grid-template-columns: 1fr; } .overview-link-card { padding: 13px 14px; } }
+
+body.route-active .overview-brief,
+body.route-active .overview-links { display: none !important; }
+
+.content-wrap:has(#route-pages:not([hidden])) .overview-brief,
+.content-wrap:has(#route-pages:not([hidden])) .overview-links { display: none !important; }
