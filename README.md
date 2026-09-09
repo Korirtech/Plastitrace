@@ -91,3 +91,9 @@ The repository includes [`render.yaml`](render.yaml), a Render Blueprint for the
 ## Operations pages
 
 The dashboard now includes working client-side views for **Material lots**, **Recovery network**, and **Impact ledger**. These pages reuse the current app data and visual system, with lot search and status filters, hub performance and capacity signals, and methodology-aware impact states.
+
+## On-chain verification integration
+
+The Material Lots register now includes a browser-side `PlastiTraceRegistry` reader using ethers v6 and the EIP-1193 wallet provider or a configured JSON-RPC endpoint. It reads `getLot(bytes32)` for each visible lot, maps the Solidity `LotState` to the register, reconciles on-chain quantity, displays the latest block, and refreshes on new blocks when the provider supports subscriptions.
+
+Set the deployed audited registry address and RPC endpoint in [`chain-config.js`](chain-config.js). The adapter intentionally starts in an explicit **Chain not configured** state when those values are empty; it never labels an off-chain demo row as on-chain verified. Production deployment still requires contract audit, role setup, finality handling, and a managed RPC endpoint.

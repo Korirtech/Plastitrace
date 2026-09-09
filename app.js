@@ -43,9 +43,121 @@ const baseLots = [
 ];
 let lots = [...baseLots];
 let toastTimer;
+const lotStateNames = ['Registered', 'In review', 'Verified', 'In transit', 'Received', 'Processed', 'Voided'];
+const chainConfig = window.PLASTITRACE_CHAIN_CONFIG || {};
+
+function setChainStatus(kind, label, detail = '') {
+  const button = document.querySelector('#chain-status');
+  const labelNode = document.querySelector('#chain-status-label');
+  if (!button || !labelNode) return;
+  button.className = `chain-status chain-${kind}`;
+  labelNode.textContent = detail ? `${label} · ${detail}` : label;
+  const overviewValue = document.querySelector('#overview-chain-value');
+  const overviewDetail = document.querySelector('#overview-chain-detail');
+  if (overviewValue) overviewValue.textContent = kind === 'live' ? 'Live' : kind === 'warning' ? 'Wrong network' : kind === 'error' ? 'Read error' : 'Offline';
+  if (overviewDetail) overviewDetail.textContent = kind === 'live' ? detail : detail || 'Configure RPC to read live state';
+}
+
+class RegistryReader {
+  constructor(config) {
+    this.config = config;
+    this.provider = null;
+    this.contract = null;
+    this.lastBlock = null;
+    this.refreshing = false;
+  }
+
+  get configured() {
+    return Boolean(this.config.contractAddress && window.ethers);
+  }
+
+  async connect(preferWallet = false) {
+    if (!this.config.contractAddress) {
+      setChainStatus('offline', 'Chain not configured', 'add registry address');
+      return false;
+    }
+    if (!window.ethers) {
+      setChainStatus('error', 'Chain adapter unavailable');
+      return false;
+    }
+    try {
+      if (preferWallet && window.ethereum) {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        this.provider = new ethers.BrowserProvider(window.ethereum);
+      } else if (this.config.rpcUrl) {
+        this.provider = new ethers.JsonRpcProvider(this.config.rpcUrl, this.config.chainId || undefined, { staticNetwork: true });
+      } else if (window.ethereum) {
+        this.provider = new ethers.BrowserProvider(window.ethereum);
+      } else {
+        setChainStatus('offline', 'Chain not connected', 'connect wallet or RPC');
+        return false;
+      }
+      const network = await this.provider.getNetwork();
+      const actualChainId = Number(network.chainId);
+      if (this.config.chainId && actualChainId !== Number(this.config.chainId)) {
+        setChainStatus('warning', 'Wrong network', `expected ${this.config.chainName || this.config.chainId}`);
+        return false;
+      }
+      const abi = [
+        'function getLot(bytes32 lotId) view returns (tuple(bytes32 lotId, bytes32 organizationId, bytes3 materialCode, uint64 quantityGrams, uint64 capturedAt, uint8 state, address currentCustodian, bytes32 metadataHash, bytes32 latestEvidenceHash))',
+        'function getAttestations(bytes32 lotId) view returns (tuple(bytes32 lotId, address verifier, bytes32 evidenceHash, bytes32 verificationHash, uint64 quantityGramsObserved, uint64 attestedAt, bool passed)[])'
+      ];
+      this.contract = new ethers.Contract(this.config.contractAddress, abi, this.provider);
+      this.provider.on?.('block', () => this.refresh(true));
+      await this.refresh();
+      return true;
+    } catch (error) {
+      setChainStatus('error', 'Chain read failed', error.shortMessage || 'check RPC and registry');
+      return false;
+    }
+  }
+
+  async readLot(lot) {
+    const lotKey = ethers.id(lot.id);
+    try {
+      const onchainLot = await this.contract.getLot(lotKey);
+      lot.chain = {
+        connected: true,
+        exists: true,
+        state: lotStateNames[Number(onchainLot.state)] || 'Unknown',
+        quantityKg: Number(onchainLot.quantityGrams) / 1000,
+        custodian: onchainLot.currentCustodian,
+        evidenceHash: onchainLot.latestEvidenceHash,
+        lotKey,
+        checkedAt: new Date().toISOString()
+      };
+    } catch (error) {
+      lot.chain = { connected: true, exists: false, state: 'Not registered', lotKey, checkedAt: new Date().toISOString() };
+    }
+  }
+
+  async refresh(fromBlock = false) {
+    if (!this.contract || this.refreshing) return;
+    this.refreshing = true;
+    try {
+      await Promise.all(lots.map((lot) => this.readLot(lot)));
+      this.lastBlock = await this.provider.getBlockNumber();
+      setChainStatus('live', `${this.config.chainName || 'Registry'} live`, `block ${this.lastBlock}`);
+      renderLots();
+      if (document.querySelector('#route-pages')?.style.display !== 'none' && document.querySelector('#breadcrumb-view')?.textContent === 'Material lots') renderLotsPage();
+    } finally {
+      this.refreshing = false;
+    }
+  }
+}
+
+const registryReader = new RegistryReader(chainConfig);
 
 function formatValue(value) {
   return `KES ${value.toLocaleString('en-KE')}`;
+}
+
+function chainCell(lot) {
+  if (!lot.chain?.connected) return '<span class="chain-pill muted"><i></i>Not connected</span>';
+  if (!lot.chain.exists) return '<span class="chain-pill warning"><i></i>Not registered</span>';
+  const stateClass = lot.chain.state === 'Verified' ? 'verified' : lot.chain.state === 'Voided' ? 'error' : 'pending';
+  const quantity = lot.chain.quantityKg ? ` · ${lot.chain.quantityKg.toLocaleString('en-KE')} kg` : '';
+  return `<span class="chain-pill ${stateClass}"><i></i>${lot.chain.state}${quantity}</span>`;
 }
 
 function renderLots() {
@@ -63,7 +175,7 @@ function renderLots() {
       <td><div class="material-cell"><i class="material-swatch ${lot.swatch}"></i>${lot.material}</div></td>
       <td><div class="route-cell"><strong>${lot.source}</strong><span>${lot.route}</span></div></td>
       <td>${lot.weight.toLocaleString('en-KE')} kg</td>
-      <td><span class="status ${lot.status === 'Verified' ? 'verified' : lot.status === 'In review' ? 'review' : 'pending'}">${lot.status}</span></td>
+      <td><span class="status ${lot.status === 'Verified' ? 'verified' : lot.status === 'In review' ? 'review' : 'pending'}">${lot.status}</span><div class="chain-row-state">${chainCell(lot)}</div></td>
       <td class="value-cell">${formatValue(lot.value)}</td>
       <td class="date-cell">${lot.recorded}</td>
       <td><button class="row-menu" aria-label="More options for ${lot.id}" data-toast="Lot actions are coming soon">•••</button></td>
@@ -130,13 +242,13 @@ function routeHeader(kicker, title, description, action = '') {
 function renderLotsPage() {
   routePages.innerHTML = `${routeHeader('Chain of custody · 86 active lots', 'Material lots', 'Search every verified kilogram, inspect its chain of custody, and move the next lot through verification.', '<button class="button button-primary" data-open-intake><span data-icon="plus"></span>Record intake</button>')}
     <section class="route-kpi-grid"><div class="route-kpi dark"><span>Verified this month</span><strong>18.6<span> t</span></strong><small>+12.4% vs last month</small></div><div class="route-kpi lime"><span>In review</span><strong>14<span> lots</span></strong><small>5 due today</small></div><div class="route-kpi paper"><span>Average evidence score</span><strong>94<span>%</span></strong><small>Across current network</small></div><div class="route-kpi sage"><span>Lots needing attention</span><strong>03<span> items</span></strong><small>Open verifier actions</small></div></section>
-    <section class="panel route-table-panel"><div class="panel-heading lots-heading"><div><p class="section-kicker">Master register</p><h2>All material lots</h2><p class="section-description">The operational identity of every lot, from source capture to processor handoff.</p></div><div class="table-actions"><label class="search-field"><span data-icon="search"></span><input id="page-lot-search" type="search" placeholder="Search lots" aria-label="Search all material lots" /></label><select id="page-status-filter" aria-label="Filter all lots by status"><option value="all">All statuses</option><option value="Verified">Verified</option><option value="In review">In review</option><option value="Pending">Pending</option></select></div></div><div class="table-scroll"><table><thead><tr><th>Lot ID</th><th>Material</th><th>Source & route</th><th>Weight</th><th>Traceability</th><th>Value</th><th>Recorded</th></tr></thead><tbody id="page-lots-body"></tbody></table></div><div class="table-footer"><span>Showing <strong id="page-showing-count">6</strong> of <strong id="page-total-count">86</strong> lots</span><button class="text-button" data-toast="Bulk actions are coming soon">Bulk actions <span>→</span></button></div></section>`;
+    <section class="panel route-table-panel"><div class="panel-heading lots-heading"><div><p class="section-kicker">Master register</p><h2>All material lots</h2><p class="section-description">The operational identity of every lot, from source capture to processor handoff.</p></div><div class="table-actions"><label class="search-field"><span data-icon="search"></span><input id="page-lot-search" type="search" placeholder="Search lots" aria-label="Search all material lots" /></label><select id="page-status-filter" aria-label="Filter all lots by status"><option value="all">All statuses</option><option value="Verified">Verified</option><option value="In review">In review</option><option value="Pending">Pending</option></select></div></div><div class="table-scroll"><table><thead><tr><th>Lot ID</th><th>Material</th><th>Source & route</th><th>Weight</th><th>Traceability</th><th>On-chain verification</th><th>Value</th><th>Recorded</th></tr></thead><tbody id="page-lots-body"></tbody></table></div><div class="table-footer"><span>Showing <strong id="page-showing-count">6</strong> of <strong id="page-total-count">86</strong> lots</span><button class="text-button" data-toast="Bulk actions are coming soon">Bulk actions <span>→</span></button></div></section>`;
   replaceIcons(routePages);
   const draw = () => {
     const search = document.querySelector('#page-lot-search').value.trim().toLowerCase();
     const status = document.querySelector('#page-status-filter').value;
     const filtered = lots.filter((lot) => (!search || [lot.id, lot.material, lot.source, lot.route].join(' ').toLowerCase().includes(search)) && (status === 'all' || lot.status === status));
-    document.querySelector('#page-lots-body').innerHTML = filtered.length ? filtered.map((lot) => `<tr><td>${lot.id}</td><td><div class="material-cell"><i class="material-swatch ${lot.swatch}"></i>${lot.material}</div></td><td><div class="route-cell"><strong>${lot.source}</strong><span>${lot.route}</span></div></td><td>${lot.weight.toLocaleString('en-KE')} kg</td><td><span class="status ${lot.status === 'Verified' ? 'verified' : lot.status === 'In review' ? 'review' : 'pending'}">${lot.status}</span></td><td class="value-cell">${formatValue(lot.value)}</td><td class="date-cell">${lot.recorded}</td></tr>`).join('') : '<tr class="empty-row"><td colspan="7">No lots match this search.</td></tr>';
+    document.querySelector('#page-lots-body').innerHTML = filtered.length ? filtered.map((lot) => `<tr><td>${lot.id}</td><td><div class="material-cell"><i class="material-swatch ${lot.swatch}"></i>${lot.material}</div></td><td><div class="route-cell"><strong>${lot.source}</strong><span>${lot.route}</span></div></td><td>${lot.weight.toLocaleString('en-KE')} kg</td><td><span class="status ${lot.status === 'Verified' ? 'verified' : lot.status === 'In review' ? 'review' : 'pending'}">${lot.status}</span></td><td>${chainCell(lot)}</td><td class="value-cell">${formatValue(lot.value)}</td><td class="date-cell">${lot.recorded}</td></tr>`).join('') : '<tr class="empty-row"><td colspan="8">No lots match this search.</td></tr>';
     document.querySelector('#page-showing-count').textContent = filtered.length;
     document.querySelector('#page-total-count').textContent = lots.length + (86 - baseLots.length);
   };
@@ -175,6 +287,8 @@ function navigate(view) {
 }
 
 document.querySelectorAll('[data-toast]').forEach(bindToast);
+document.querySelector('#chain-status')?.addEventListener('click', () => registryReader.connect(true));
+registryReader.connect(false);
 document.querySelectorAll('[data-open-intake]').forEach((button) => button.addEventListener('click', openModal));
 document.querySelectorAll('[data-close-intake]').forEach((button) => button.addEventListener('click', closeModal));
 document.querySelector('#intake-modal').addEventListener('click', (event) => { if (event.target.id === 'intake-modal') closeModal(); });

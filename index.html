@@ -94,7 +94,7 @@
           <button class="mobile-menu icon-button" aria-label="Open navigation">☰</button>
           <div class="breadcrumbs"><span>Kenya network</span><span class="crumb-separator">/</span><strong id="breadcrumb-view">Overview</strong></div>
           <div class="topbar-actions">
-            <span class="sync-status"><span class="sync-dot"></span>Synced 4 min ago</span>
+            <button class="chain-status chain-offline" id="chain-status" type="button" data-chain-connect><span class="chain-status-dot"></span><span id="chain-status-label">Chain not connected</span></button>
             <button class="icon-button notification-button" aria-label="Notifications" data-toast="You're all caught up"><span data-icon="bell"></span><i></i></button>
             <button class="profile-avatar topbar-profile" aria-label="Open profile menu" data-toast="Profile menu is coming soon">AM</button>
           </div>
@@ -103,14 +103,21 @@
         <div class="content-wrap">
           <section class="hero-row">
             <div>
-              <p class="eyebrow"><span class="eyebrow-dot"></span>Recovery intelligence · Monday, 07 September 2026</p>
-              <h1>Good morning, Amina.</h1>
-              <p class="hero-copy">Turn every kilogram into a verified asset.</p>
+              <p class="eyebrow"><span class="eyebrow-dot"></span>Operations command center · Monday, 07 September 2026</p>
+              <h1>Recovery intelligence,<br /><span>at operating speed.</span></h1>
+              <p class="hero-copy">A single view of material flow, proof quality, and the next action that unlocks value.</p>
             </div>
             <div class="hero-actions">
               <button class="button button-ghost" data-toast="Report export is being prepared"><span data-icon="download"></span>Export report</button>
               <button class="button button-primary" data-open-intake><span data-icon="plus"></span>Record intake</button>
             </div>
+          </section>
+
+          <section class="overview-brief" aria-labelledby="brief-title">
+            <div class="brief-intro"><p class="section-kicker">Morning brief</p><h2 id="brief-title">Proof is moving with the material.</h2><p>Network coverage is healthy. The next unlock is closing the three lots waiting on evidence or verification.</p><button class="text-button" data-view-target="lots">Open verification queue <span>→</span></button></div>
+            <div class="brief-signal"><span class="brief-icon lime-icon" data-icon="shield"></span><div><span>Identity coverage</span><strong>82%</strong><small>70 of 86 lots anchored</small></div></div>
+            <div class="brief-signal"><span class="brief-icon chain-icon" data-icon="network"></span><div><span>Registry connection</span><strong id="overview-chain-value">Offline</strong><small id="overview-chain-detail">Configure RPC to read live state</small></div></div>
+            <div class="brief-signal"><span class="brief-icon alert-icon" data-icon="spark"></span><div><span>Next priority</span><strong>03 lots</strong><small>Need verifier attention</small></div></div>
           </section>
 
           <section class="metric-grid" aria-label="Network metrics">
@@ -244,6 +251,8 @@
       </section>
     </div>
     <div class="toast" id="toast" role="status" aria-live="polite"><span class="toast-check">✓</span><span id="toast-message">Saved</span></div>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
+    <script src="chain-config.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
