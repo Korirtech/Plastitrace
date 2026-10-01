@@ -6,15 +6,16 @@
     <meta name="theme-color" content="#11211d" />
     <meta
       name="description"
-      content="Plastitrace turns recovered plastic into a verified, measurable asset."
+      content="Trace recovered plastic from collection and verified weighing through fair earnings and measurable impact."
     />
-    <title>Plastitrace — Recovery intelligence</title>
+    <title>Plastitrace — Every kilo traced</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -38,22 +39,30 @@
           <p class="nav-label">Workspace</p>
           <button class="nav-item active" data-view="overview">
             <span class="nav-icon" data-icon="grid"></span>
-            <span>Overview</span>
-            <span class="nav-pill">Live</span>
-          </button>
-          <button class="nav-item" data-view="lots">
-            <span class="nav-icon" data-icon="layers"></span>
-            <span>Material lots</span>
-            <span class="nav-count" id="nav-total-lots">86</span>
+            <span>Home</span>
           </button>
           <button class="nav-item" data-view="network">
             <span class="nav-icon" data-icon="network"></span>
-            <span>Recovery network</span>
+            <span>Collection points</span>
+          </button>
+          <button class="nav-item" data-view="marketplace">
+            <span class="nav-icon" data-icon="layers"></span>
+            <span>Marketplace</span>
+          </button>
+          <button class="nav-item" data-view="wallet">
+            <span class="nav-icon" data-icon="coins"></span>
+            <span>My wallet</span>
+          </button>
+          <button class="nav-item" data-view="lots">
+            <span class="nav-icon" data-icon="layers"></span>
+            <span>Operations</span>
+            <span class="nav-count" id="nav-total-lots">86</span>
           </button>
           <button class="nav-item" data-view="ledger">
             <span class="nav-icon" data-icon="pulse"></span>
-            <span>Impact ledger</span>
+            <span>Impact</span>
           </button>
+          <button class="nav-item" data-view="admin"><span class="nav-icon" data-icon="settings"></span><span>Admin</span></button>
         </nav>
 
         <nav class="nav-group nav-group-secondary" aria-label="Manage">
@@ -71,6 +80,7 @@
             <span>Settings</span>
           </button>
         </nav>
+        <button class="portal-signout" type="button" data-toast="Sign-out is unavailable in this local demo">Sign out</button>
 
         <div class="sidebar-footer">
           <div class="help-card">
@@ -103,18 +113,18 @@
         <div class="content-wrap">
           <section class="hero-row">
             <div>
-              <p class="eyebrow"><span class="eyebrow-dot"></span>Operations command center · Monday, 07 September 2026</p>
-              <h1>Recovery intelligence,<br /><span>at operating speed.</span></h1>
-              <p class="hero-copy">A single view of material flow, proof quality, and the next action that unlocks value.</p>
+              <p class="eyebrow"><span class="eyebrow-dot"></span>Chain of custody · Kenya</p>
+              <h1>Every kilo of plastic,<br /><span>traced.</span></h1>
+              <p class="hero-copy">Give plastic a digital identity, from the collector's scale to the recycled product, with verified weights, fair earnings and measurable impact.</p>
             </div>
             <div class="hero-actions">
-              <button class="button button-ghost" data-toast="Report export is being prepared"><span data-icon="download"></span>Export report</button>
-              <button class="button button-primary" data-open-intake><span data-icon="plus"></span>Record intake</button>
+              <form id="trace-form" class="trace-form"><span class="trace-icon" data-icon="scan"></span><label for="trace-code">Trace a batch</label><p>Scan the QR or enter the batch code.</p><div><input id="trace-code" placeholder="PT-24086" aria-label="Batch code" /><button type="submit" class="button button-primary">Trace</button></div><small id="trace-result" role="status"></small></form>
+              <div class="hero-ctas"><button class="button button-primary" data-view-target="wallet"><span data-icon="plus"></span>Start collecting</button><button class="button button-ghost" data-view-target="network">Find a collection point</button></div>
             </div>
           </section>
 
           <section class="overview-brief" aria-labelledby="brief-title">
-            <div class="brief-intro"><p class="section-kicker">Morning brief</p><h2 id="brief-title">Proof is moving with the material.</h2><p>Network coverage is healthy. The next unlock is closing the three lots waiting on evidence or verification.</p><button class="text-button" data-view-target="lots">Open verification queue <span>→</span></button></div>
+            <div class="brief-intro"><p class="section-kicker">Plastitrace network</p><h2 id="brief-title">Recovery with a record.</h2><p>Verified weighing, fair collector earnings, and a clear chain of custody for every batch.</p><button class="text-button" data-view-target="lots">Open operations <span>→</span></button></div>
             <div class="brief-signal"><span class="brief-icon lime-icon" data-icon="shield"></span><div><span>Identity coverage</span><strong>82%</strong><small>70 of 86 lots anchored</small></div></div>
             <div class="brief-signal"><span class="brief-icon chain-icon" data-icon="network"></span><div><span>Registry connection</span><strong id="overview-chain-value">Offline</strong><small id="overview-chain-detail">Configure RPC to read live state</small></div></div>
             <div class="brief-signal"><span class="brief-icon alert-icon" data-icon="spark"></span><div><span>Next priority</span><strong>03 lots</strong><small>Need verifier attention</small></div></div>
@@ -165,10 +175,13 @@
             <div class="identity-meta"><span><i class="status-beacon"></i> 82% identity coverage</span><span>Latest anchor <strong>PT-24086</strong> · 12 min ago</span><button class="text-button" data-toast="Public verification pages are coming soon">View verification layer <span>→</span></button></div>
           </section>
 
-          <section class="overview-links" aria-label="Explore operations areas">
-            <a class="overview-link-card" href="#material-lots" data-view-target="lots"><span class="overview-link-icon lime-icon" data-icon="scan"></span><span><small>Operations</small><strong>Material lots</strong><em>Inspect custody and verification</em></span><b>→</b></a>
-            <a class="overview-link-card" href="#recovery-network" data-view-target="network"><span class="overview-link-icon chain-icon" data-icon="network"></span><span><small>Network</small><strong>Recovery network</strong><em>See hubs, capacity, and routes</em></span><b>→</b></a>
-            <a class="overview-link-card" href="#impact-ledger" data-view-target="ledger"><span class="overview-link-icon alert-icon" data-icon="shield"></span><span><small>Integrity</small><strong>Impact ledger</strong><em>Track measured and claimable value</em></span><b>→</b></a>
+          <section class="overview-links" aria-label="Plastitrace features">
+            <a class="overview-link-card" href="#operations" data-view-target="lots"><span class="overview-link-icon lime-icon" data-icon="scale"></span><span><small>Verified weighing</small><strong>Every kilo accounted for</strong><em>Recorded → verified → accepted → processed.</em></span><b>→</b></a>
+            <a class="overview-link-card" href="#wallet" data-view-target="wallet"><span class="overview-link-icon chain-icon" data-icon="coins"></span><span><small>Collector wallet</small><strong>Fair, clear earnings</strong><em>Rates are set when a batch is verified.</em></span><b>→</b></a>
+            <a class="overview-link-card" href="#impact" data-view-target="ledger"><span class="overview-link-icon alert-icon" data-icon="leaf"></span><span><small>Impact engine</small><strong>Measured climate impact</strong><em>Material-specific factors turn kilos into outcomes.</em></span><b>→</b></a>
+            <a class="overview-link-card" href="#points" data-view-target="network"><span class="overview-link-icon lime-icon" data-icon="network"></span><span><small>Collection network</small><strong>Find a nearby drop-off</strong><em>Hours, accepted materials and capacity.</em></span><b>→</b></a>
+            <a class="overview-link-card" href="#marketplace" data-view-target="marketplace"><span class="overview-link-icon chain-icon" data-icon="layers"></span><span><small>Marketplace</small><strong>Move material to buyers</strong><em>Recyclers post requests; collectors respond.</em></span><b>→</b></a>
+            <a class="overview-link-card" href="#trace" data-view-target="lots"><span class="overview-link-icon alert-icon" data-icon="fingerprint"></span><span><small>Public batch identity</small><strong>Proof that travels</strong><em>Look up a batch and follow its journey.</em></span><b>→</b></a>
           </section>
 
           <section class="settlement-panel overview-detail" aria-labelledby="settlement-title">
@@ -257,6 +270,7 @@
       </section>
     </div>
     <div class="toast" id="toast" role="status" aria-live="polite"><span class="toast-check">✓</span><span id="toast-message">Saved</span></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
     <script src="chain-config.js"></script>
     <script src="app.js"></script>

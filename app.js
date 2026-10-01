@@ -41,7 +41,13 @@ const baseLots = [
   { id: 'PT-24082', material: 'Mixed plastics', source: 'Industrial Area Sort Site', route: 'Nairobi Metro', weight: 740, status: 'Verified', value: 37000, recorded: '05 Sep 2026', swatch: 'mixed' },
   { id: 'PT-24081', material: 'HDPE', source: 'Nakuru East Collection Point', route: 'Rift Valley', weight: 351, status: 'Verified', value: 28080, recorded: '05 Sep 2026', swatch: 'hdpe' }
 ];
-let lots = [...baseLots];
+let lots = (() => {
+  try {
+    return JSON.parse(localStorage.getItem('plastitraceLots')) || [...baseLots];
+  } catch {
+    return [...baseLots];
+  }
+})();
 let toastTimer;
 const lotStateNames = ['Registered', 'In review', 'Verified', 'In transit', 'Received', 'Processed', 'Voided'];
 const chainConfig = window.PLASTITRACE_CHAIN_CONFIG || {};
@@ -231,9 +237,13 @@ function updateMetrics(weight, value) {
   impactNode.textContent = (currentImpact + weight * .00255).toFixed(1);
 }
 
+function saveLots() {
+  localStorage.setItem('plastitraceLots', JSON.stringify(lots));
+}
+
 const overviewParts = ['.hero-row', '.overview-brief', '.metric-grid', '.identity-panel', '.overview-links', '.settlement-panel', '.dashboard-grid', '.lots-panel', '.bottom-grid'];
 const routePages = document.querySelector('#route-pages');
-const pageNames = { overview: 'Overview', lots: 'Material lots', network: 'Recovery network', ledger: 'Impact ledger' };
+const pageNames = { overview: 'Home', lots: 'Operations', network: 'Collection points', ledger: 'Impact', wallet: 'My wallet', marketplace: 'Marketplace', admin: 'Admin' };
 
 function routeHeader(kicker, title, description, action = '') {
   return `<div class="route-page-header"><div><p class="eyebrow"><span class="eyebrow-dot"></span>${kicker}</p><h1>${title}</h1><p class="hero-copy">${description}</p></div>${action}</div>`;
@@ -273,6 +283,71 @@ function renderLedgerPage() {
   replaceIcons(routePages);
 }
 
+const collectionPoints = [
+  { name: 'Eastleigh Depot', area: 'Eastleigh', lat: -1.277, lng: 36.850, materials: ['PET', 'HDPE', 'PP', 'LDPE'], hours: 'Mon-Sat, 08:00-18:00', capacity: 'Open · 68% capacity' },
+  { name: 'Kibera Hub', area: 'Kibera', lat: -1.313, lng: 36.788, materials: ['PET', 'HDPE'], hours: 'Mon-Sat, 07:00-17:00', capacity: 'Open · 42% capacity' },
+  { name: 'Nairobi West', area: 'Nairobi West', lat: -1.303, lng: 36.815, materials: ['PET', 'HDPE', 'PP'], hours: 'Mon-Fri, 08:00-17:00', capacity: 'Open · 81% capacity' },
+  { name: 'Westlands Point', area: 'Westlands', lat: -1.267, lng: 36.808, materials: ['PET', 'PP'], hours: 'Daily, 09:00-18:00', capacity: 'Open · 56% capacity' }
+];
+
+function renderWalletPage() {
+  const todayLots = lots.filter((lot) => lot.recorded === new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }));
+  const todayWeight = todayLots.reduce((sum, lot) => sum + Number(lot.weight), 0);
+  const verifiedEarnings = lots.filter((lot) => lot.status === 'Verified').reduce((sum, lot) => sum + Number(lot.value), 0);
+  const estimatedEarnings = todayLots.reduce((sum, lot) => sum + Number(lot.value), 0);
+  const materials = { PET: 40, HDPE: 80, PP: 70, 'LDPE film': 45, 'Mixed plastics': 50 };
+  routePages.innerHTML = `${routeHeader('Collector account · Nairobi', 'Collector wallet', 'Record recovered plastic, follow verification, and see what each batch is worth.', '<button class="button button-ghost" data-toast="M-Pesa payouts will be enabled when settlement is connected">M-Pesa payouts · coming soon</button>')}
+    <section class="wallet-metrics" aria-label="Wallet summary"><article><span>Today's collection</span><strong>${todayWeight.toLocaleString('en-KE')} kg</strong></article><article><span>Estimated value</span><strong>KSh ${estimatedEarnings.toLocaleString('en-KE')}</strong></article><article><span>Today's earnings (est.)</span><strong>KSh ${estimatedEarnings.toLocaleString('en-KE')}</strong></article><article class="wallet-total"><span>Total verified earnings</span><strong>KSh ${verifiedEarnings.toLocaleString('en-KE')}</strong></article></section>
+    <p class="wallet-note">Pending verification: KSh ${(estimatedEarnings - todayLots.filter((lot) => lot.status === 'Verified').reduce((sum, lot) => sum + Number(lot.value), 0)).toLocaleString('en-KE')}. Earnings are confirmed when a collection centre verifies the weight.</p>
+    <section class="wallet-layout"><form class="panel wallet-form" id="wallet-collection-form"><h2><span data-icon="plus"></span>Record collection</h2><label>Material<select name="material" required>${Object.entries(materials).map(([name, rate]) => `<option value="${name}">${name} — KSh ${rate}/kg</option>`).join('')}</select></label><label>Recorded weight (kg)<input name="weight" type="number" min="1" step="0.1" required /></label><label>Drop-off point<select name="point" required>${collectionPoints.map((point) => `<option>${point.name}</option>`).join('')}<option>Direct / not yet delivered</option></select></label><button type="submit" class="button button-primary full-width">Create batch</button></form>
+    <section class="panel wallet-table-panel"><div class="table-scroll"><table><thead><tr><th>Batch</th><th>Material</th><th>Recorded</th><th>Verified</th><th>Stage</th><th>Earned</th></tr></thead><tbody>${lots.length ? lots.map((lot) => `<tr><td>${lot.id}</td><td>${lot.material}</td><td>${Number(lot.weight).toLocaleString('en-KE')} kg</td><td>${lot.status === 'Verified' ? `${Number(lot.weight).toLocaleString('en-KE')} kg` : 'Pending'}</td><td><span class="status ${lot.status === 'Verified' ? 'verified' : lot.status === 'In review' ? 'review' : 'pending'}">${lot.status}</span></td><td>${formatValue(lot.value)}</td></tr>`).join('') : '<tr><td colspan="6" class="wallet-empty">No collections yet. Record your first one.</td></tr>'}</tbody></table></div></section></section>`;
+  replaceIcons(routePages);
+}
+
+function renderMarketplacePage() {
+  const requests = [
+    { buyer: 'GreenLoop Recyclers', material: 'PET', quantity: '2,000 kg', price: 'KSh 42/kg', location: 'Industrial Area, Nairobi', deadline: 'Closes 14 Oct', tone: 'market-pet' },
+    { buyer: 'Coast Circular Works', material: 'HDPE', quantity: '800 kg', price: 'KSh 78/kg', location: 'Mombasa Road, Nairobi', deadline: 'Closes 18 Oct', tone: 'market-hdpe' },
+    { buyer: 'TakaTaka Materials', material: 'PP', quantity: '1,200 kg', price: 'KSh 68/kg', location: 'Ruaraka, Nairobi', deadline: 'Closes 21 Oct', tone: 'market-pp' }
+  ];
+  const postedRequests = JSON.parse(localStorage.getItem('plastitraceRequests') || '[]');
+  postedRequests.forEach((request) => requests.unshift({ buyer: 'Community buyer request', material: request.material, quantity: `${Number(request.quantity).toLocaleString('en-KE')} kg`, price: `KSh ${Number(request.price)}/kg`, location: 'Nairobi network', deadline: 'Just posted', tone: 'market-pet' }));
+  routePages.innerHTML = `${routeHeader('Circular materials exchange', 'Marketplace', 'Match recovered material with verified buyers and clear prices.', '<button class="button button-primary" data-market-action="post">Post a buy request</button>')}
+    <div class="market-toolbar"><div><strong>Open buyer requests</strong><span> · 3 requests near Nairobi</span></div><label>Material <select id="market-filter"><option value="all">All materials</option><option>PET</option><option>HDPE</option><option>PP</option></select></label></div>
+    <section class="market-grid">${requests.map((request) => `<article class="panel market-card ${request.tone}" data-material="${request.material}"><div class="market-card-top"><span class="material-tag">${request.material}</span><span>${request.deadline}</span></div><p class="section-kicker">${request.buyer === 'Community buyer request' ? 'Community listing · demo' : 'Verified recycler'}</p><h2>${request.buyer}</h2><div class="market-terms"><div><span>Looking for</span><strong>${request.quantity}</strong></div><div><span>Indicative price</span><strong>${request.price}</strong></div><div><span>Delivery</span><strong>${request.location}</strong></div></div><button class="button button-secondary full-width" data-market-action="respond" data-buyer="${request.buyer}">Respond to request</button></article>`).join('')}</section>
+    <p class="market-disclaimer">Prices are indicative. Final settlement follows verified weight and buyer acceptance.</p>`;
+  replaceIcons(routePages);
+  document.querySelector('#market-filter').addEventListener('change', (event) => {
+    routePages.querySelectorAll('.market-card').forEach((card) => { card.hidden = event.target.value !== 'all' && card.dataset.material !== event.target.value; });
+  });
+}
+
+function renderAdminPage() {
+  const pendingLots = lots.filter((lot) => lot.status !== 'Verified');
+  routePages.innerHTML = `${routeHeader('Network controls', 'Admin', 'Review incoming batches, manage material rates, and keep collection points current.')}
+    <section class="admin-summary"><article><span>Awaiting verification</span><strong>${pendingLots.length}</strong></article><article><span>Active collection points</span><strong>${collectionPoints.length}</strong></article><article><span>Materials with rates</span><strong>5</strong></article></section>
+    <section class="panel admin-queue"><div class="panel-heading"><div><p class="section-kicker">Verification queue</p><h2>Review recorded batches</h2></div><span class="live-badge"><i></i> Local demo</span></div><div class="table-scroll"><table><thead><tr><th>Batch</th><th>Material</th><th>Source</th><th>Weight</th><th>Estimated value</th><th>Action</th></tr></thead><tbody>${pendingLots.length ? pendingLots.map((lot) => `<tr><td>${lot.id}</td><td>${lot.material}</td><td>${lot.source}</td><td>${Number(lot.weight).toLocaleString('en-KE')} kg</td><td>${formatValue(lot.value)}</td><td><button class="button button-primary compact" data-verify-lot="${lot.id}">Verify</button></td></tr>`).join('') : '<tr><td colspan="6" class="wallet-empty">All recorded batches are verified.</td></tr>'}</tbody></table></div></section>
+    <section class="panel admin-rates"><div><p class="section-kicker">Indicative rates</p><h2>Material price guide</h2></div><div class="rate-list"><span>PET <strong>KSh 40/kg</strong></span><span>HDPE <strong>KSh 80/kg</strong></span><span>PP <strong>KSh 70/kg</strong></span><span>LDPE <strong>KSh 45/kg</strong></span><span>Mixed plastics <strong>KSh 50/kg</strong></span></div></section>`;
+}
+
+function renderNetworkPage() {
+  routePages.innerHTML = `${routeHeader('Collection network · Nairobi', 'Collection points', 'Find a nearby place to drop off sorted plastic. Check accepted materials, opening hours and current capacity.')}
+    <section class="collection-layout"><div class="panel collection-map-panel"><div id="collection-map" role="img" aria-label="Map of Plastitrace collection points in Nairobi"></div><div class="map-caption">Nairobi collection network · ${collectionPoints.length} active points</div></div><div class="collection-point-list">${collectionPoints.map((point, index) => `<article class="panel collection-point" data-point-index="${index}"><div class="point-heading"><h2>${point.name}</h2><span class="point-open">Open</span></div><p>${point.area}, Nairobi</p><div class="point-materials">${point.materials.map((material) => `<span>${material}</span>`).join('')}</div><div class="point-details"><span>${point.hours}</span><span>${point.capacity}</span></div><button class="text-button" data-focus-point="${index}">Show on map <span>→</span></button></article>`).join('')}</div></section>`;
+  if (window.L) {
+    const map = L.map('collection-map', { scrollWheelZoom: false }).setView([-1.29, 36.815], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+    const pins = collectionPoints.map((point) => L.marker([point.lat, point.lng]).addTo(map).bindPopup(`<strong>${point.name}</strong><br>${point.materials.join(' · ')}`));
+    routePages.querySelectorAll('[data-focus-point]').forEach((button) => button.addEventListener('click', () => {
+      const index = Number(button.dataset.focusPoint);
+      map.setView([collectionPoints[index].lat, collectionPoints[index].lng], 15);
+      pins[index].openPopup();
+    }));
+    setTimeout(() => map.invalidateSize(), 0);
+  } else {
+    document.querySelector('#collection-map').innerHTML = '<div class="map-fallback">Map tiles are unavailable. Collection point details remain available beside this panel.</div>';
+  }
+}
+
 function navigate(view) {
   document.body.classList.toggle('route-active', view !== 'overview');
   setActiveNav(view);
@@ -284,6 +359,9 @@ function navigate(view) {
   if (view === 'lots') renderLotsPage();
   if (view === 'network') renderNetworkPage();
   if (view === 'ledger') renderLedgerPage();
+  if (view === 'wallet') renderWalletPage();
+  if (view === 'marketplace') renderMarketplacePage();
+  if (view === 'admin') renderAdminPage();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -313,6 +391,53 @@ routePages.addEventListener('click', (event) => {
   if (intake) openModal();
   const toast = event.target.closest('[data-toast]');
   if (toast) showToast(toast.dataset.toast);
+  const verify = event.target.closest('[data-verify-lot]');
+  if (verify) {
+    const lot = lots.find((item) => item.id === verify.dataset.verifyLot);
+    if (lot) {
+      lot.status = 'Verified';
+      saveLots();
+      renderAdminPage();
+      renderLots();
+      showToast(`${lot.id} verified. Earnings are confirmed.`);
+    }
+  }
+  const marketAction = event.target.closest('[data-market-action]');
+  if (marketAction?.dataset.marketAction === 'respond') {
+    marketAction.textContent = 'Interest sent';
+    marketAction.disabled = true;
+    showToast(`Your interest was shared with ${marketAction.dataset.buyer}.`);
+  }
+  if (marketAction?.dataset.marketAction === 'post' && !routePages.querySelector('#market-request-form')) {
+    document.querySelector('.market-toolbar').insertAdjacentHTML('beforebegin', '<form id="market-request-form" class="panel market-request-form"><h2>Post a buy request</h2><label>Material<select name="material"><option>PET</option><option>HDPE</option><option>PP</option><option>LDPE film</option></select></label><label>Quantity (kg)<input name="quantity" type="number" min="1" required></label><label>Price per kg (KSh)<input name="price" type="number" min="1" required></label><button class="button button-primary" type="submit">Publish request</button></form>');
+  }
+});
+routePages.addEventListener('submit', (event) => {
+  if (event.target.id === 'wallet-collection-form') {
+    event.preventDefault();
+    const values = new FormData(event.target);
+    const material = String(values.get('material'));
+    const weight = Number(values.get('weight'));
+    const rate = { PET: 40, HDPE: 80, PP: 70, 'LDPE film': 45, 'Mixed plastics': 50 }[material] || 50;
+    const nextId = 24087 + Math.max(0, lots.length - baseLots.length);
+    const point = String(values.get('point'));
+    const lot = { id: `PT-${nextId}`, material, source: point, route: point === 'Direct / not yet delivered' ? 'Direct collection' : 'Nairobi Metro', weight, status: 'In review', value: weight * rate, recorded: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }), swatch: material === 'PET' ? 'pet' : material === 'PP' ? 'pp' : material === 'LDPE film' ? 'ldpe' : material === 'Mixed plastics' ? 'mixed' : 'hdpe' };
+    lots = [lot, ...lots];
+    saveLots();
+    updateMetrics(weight, lot.value);
+    renderLots();
+    renderWalletPage();
+    showToast(`${lot.id} recorded and awaiting verification.`);
+  }
+  if (event.target.id === 'market-request-form') {
+    event.preventDefault();
+    const values = new FormData(event.target);
+    const requests = JSON.parse(localStorage.getItem('plastitraceRequests') || '[]');
+    requests.unshift({ material: values.get('material'), quantity: Number(values.get('quantity')), price: Number(values.get('price')) });
+    localStorage.setItem('plastitraceRequests', JSON.stringify(requests));
+    renderMarketplacePage();
+    showToast('Buyer request published in this browser.');
+  }
 });
 document.querySelectorAll('[data-range]').forEach((button) => button.addEventListener('click', () => {
   document.querySelectorAll('[data-range]').forEach((range) => range.classList.remove('selected'));
@@ -326,16 +451,25 @@ document.querySelector('#intake-form').addEventListener('submit', (event) => {
   const form = new FormData(event.currentTarget);
   const weight = Number(form.get('weight'));
   const material = String(form.get('material'));
-  const valuePerKg = { HDPE: 80, PET: 70, PP: 70, 'LDPE film': 45, 'Mixed plastics': 50 }[material] || 50;
+  const valuePerKg = { HDPE: 80, PET: 40, PP: 70, 'LDPE film': 45, 'Mixed plastics': 50 }[material] || 50;
   const nextId = 24087 + lots.length - baseLots.length;
-  const lot = { id: `PT-${nextId}`, material, source: String(form.get('source')), route: String(form.get('hub')), weight, status: 'In review', value: weight * valuePerKg, recorded: '07 Sep 2026', swatch: material === 'PET' ? 'pet' : material === 'PP' ? 'pp' : material === 'LDPE film' ? 'ldpe' : material === 'Mixed plastics' ? 'mixed' : 'hdpe' };
+  const lot = { id: `PT-${nextId}`, material, source: String(form.get('source')), route: String(form.get('hub')), weight, status: 'In review', value: weight * valuePerKg, recorded: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }), swatch: material === 'PET' ? 'pet' : material === 'PP' ? 'pp' : material === 'LDPE film' ? 'ldpe' : material === 'Mixed plastics' ? 'mixed' : 'hdpe' };
   lots = [lot, ...lots];
+  saveLots();
   updateMetrics(weight, lot.value);
   renderLots();
   closeModal();
   event.currentTarget.reset();
   showToast(`${lot.id} created and queued for verification`);
   document.querySelector('.lots-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+document.querySelector('#trace-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  const code = document.querySelector('#trace-code').value.trim().toUpperCase();
+  const lot = lots.find((item) => item.id.toUpperCase() === code);
+  const result = document.querySelector('#trace-result');
+  result.textContent = lot ? `${lot.id} · ${lot.material} · ${Number(lot.weight).toLocaleString('en-KE')} kg · ${lot.status}` : `No batch found for ${code || 'that code'}. Check the code and try again.`;
 });
 
 renderLots();

@@ -4,8 +4,8 @@
   "private": true,
   "description": "Traceable plastic recovery infrastructure for Kenya",
   "scripts": {
-    "dev": "python3 -m http.server 4173",
-    "start": "python3 -m http.server 4173",
+    "dev": "node scripts/serve.js",
+    "start": "node scripts/serve.js",
     "check": "node --check app.js"
   }
 }
